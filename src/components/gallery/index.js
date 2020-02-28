@@ -1,8 +1,7 @@
-import React, { Component, Suspense } from 'react'
+import React, { Component } from 'react'
 import './gallery.css'
-import Spinner from '../spinner'
-
-const Thumbnail = React.lazy(() => import('../thumbnail'))
+import debounce from 'lodash.debounce'
+import Thumbnail from '../thumbnail'
 
 const styles = {
     wrapper: {
@@ -20,11 +19,33 @@ class Gallery extends Component
 		super()
 
 		this.state = {
+			error: false,
+			isLoading: false,
 			cols: 3,
-			thumbnails: 30
+			thumbnails: 30,
+			images: []
 		}
 
 		this.handleWindowResize = this.handleWindowResize.bind(this)
+
+		window.onscroll = debounce(() => {
+			const {
+				loadNextBatch,
+				state: {
+				  error,
+				  isLoading
+				},
+			  } = this;
+
+			  if (error || isLoading) return;
+
+			  if (
+				window.innerHeight + document.documentElement.scrollTop
+				=== document.documentElement.offsetHeight
+			  ) {
+				this.loadNextBatch();
+			  }
+		}, 100)
 	}
 
 	handleWindowResize()
@@ -45,8 +66,9 @@ class Gallery extends Component
 
 	componentDidMount()
 	{
-		this.handleWindowResize();
+		this.handleWindowResize()
 		window.addEventListener("resize", this.handleWindowResize)
+		this.loadNextBatch()
 	}
 
 	componentWillUnmount()
@@ -60,16 +82,30 @@ class Gallery extends Component
 		let grid = [];
 		for (let i = 0; i < this.state.cols; i++)
 		{
-			let col = [];
-			for (let n = 0; n < this.state.thumbnails / this.state.cols; n++)
+			let col = []
+			let images = this.state.images
+			for (let j = i; j < this.state.images.length; j += this.state.cols)
 			{
-				let key = (''+i)+(''+n)
-				col.push(<Suspense fallback={<Spinner />}> <Thumbnail /> </Suspense>)
+				col.push(images[j])
 			}
-			grid.push(<div className="column" key={''+i}> {col} </div>)
+			grid.push(<div className="column" key={''+i}>{ col }</div>)
 		}
 
 		return grid;
+	}
+
+	loadNextBatch ()
+	{
+		let images = this.state.images;
+		console.log("images: ", images);
+		for(let i = 0; i < 30; i++)
+		{
+			images.push(<Thumbnail href="https://picsum.photos/200/300" />)
+		}
+
+		this.setState({
+			images
+		})
 	}
 
     render()
