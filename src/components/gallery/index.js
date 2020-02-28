@@ -30,7 +30,6 @@ class Gallery extends Component
 
 		window.onscroll = debounce(() => {
 			const {
-				loadNextBatch,
 				state: {
 				  error,
 				  isLoading
@@ -96,11 +95,11 @@ class Gallery extends Component
 
 	loadNextBatch ()
 	{
-		let images = this.state.images;
-		console.log("images: ", images);
+		let images = this.state.images
+		let l = images.length
 		for(let i = 0; i < 30; i++)
 		{
-			images.push(<Thumbnail href="https://picsum.photos/200/300" />)
+			images.push(<Thumbnail href="https://picsum.photos/200/300" key={l+i} />)
 		}
 
 		this.setState({
