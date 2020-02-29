@@ -16,7 +16,7 @@ const styles = {
 function Spinner (props)
 {
     return (
-        <div style={styles.spinner}>
+        <div style={styles.spinner} style={props.style}>
             <img src={spinner} alt="loading.." style={styles.spinner_img} />
         </div>
     )
