@@ -3,6 +3,7 @@ import axios from 'axios'
 import './gallery.css'
 import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
+import UploadWindow from '../uploadWindow'
 
 const styles = {
     wrapper: {
@@ -116,6 +117,8 @@ class Gallery extends Component
         return(
             <div style={styles.wrapper}>
 				{this.createGrid()}
+
+				<UploadWindow />
             </div>
         )
     }
