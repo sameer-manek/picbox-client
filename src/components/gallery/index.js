@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import './gallery.css'
 import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
@@ -22,7 +23,7 @@ class Gallery extends Component
 			error: false,
 			isLoading: false,
 			cols: 3,
-			thumbnails: 30,
+			currentIndex: 0,
 			images: []
 		}
 
@@ -72,7 +73,6 @@ class Gallery extends Component
 
 	componentWillUnmount()
 	{
-		console.log("component is unmounting")
 		window.removeEventListener("resize", this.handleWindowResize)
 	}
 	 
@@ -96,14 +96,18 @@ class Gallery extends Component
 	loadNextBatch ()
 	{
 		let images = this.state.images
-		let l = images.length
-		for(let i = 0; i < 30; i++)
-		{
-			images.push(<Thumbnail href="https://picsum.photos/200/300" key={l+i} />)
-		}
+		let l = this.state.currentIndex
+		axios.get("http://localhost:5000/images/thumbnails/"+this.state.currentIndex + 1).then(response => {
+			let uris = response.data
 
-		this.setState({
-			images
+			uris.forEach(element => {
+				images.push(<Thumbnail href={element} key={++l} />)
+			});
+
+			this.setState({
+				images: images,
+				currentIndex: l
+			})
 		})
 	}
 
