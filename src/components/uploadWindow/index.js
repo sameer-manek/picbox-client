@@ -27,7 +27,7 @@ class UploadWindow extends Component
                 <div className="upload_icon">
                     <form method="post" action="localhost:5000/upload" id="uploadForm" style={{display: 'inline'}}>
                         <input type="file" style={{display: 'none'}} name="uploads" id="uploads" multiple onChange={this.handleFileUpload} />
-                        <label htmlFor="uploads" className="fa fa-upload" style={{fontSize: "22px", fontWeight: "200", lineHeight: "60px" }}></label>
+                        <label htmlFor="uploads" className="fa fa-upload" style={{fontSize: "22px", fontWeight: "200", lineHeight: "60px", cursor: "pointer", width: "60px" }}></label>
                     </form>
                 </div>
             )

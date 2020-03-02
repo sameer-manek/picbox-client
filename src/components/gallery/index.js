@@ -4,6 +4,7 @@ import './gallery.css'
 import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
 import UploadWindow from '../uploadWindow'
+import Dropzone from '../dropzone'
 
 const styles = {
     wrapper: {
@@ -116,6 +117,7 @@ class Gallery extends Component
     {
         return(
             <div style={styles.wrapper}>
+				<Dropzone />
 				{this.createGrid()}
 
 				<UploadWindow />
