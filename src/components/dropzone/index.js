@@ -29,7 +29,10 @@ function Dropzone(props)
     const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
     return(
-        <div className="dropzone">
+        <div className="dropzone" style={{display: props.display}}>
+            <button className="closeBtn" onClick={ () => { props.toggle() }}>
+                <span className="fa fa-close"> close</span>
+            </button>
             <div className="dropbox" {...getRootProps()}>
                 <input {...getInputProps()} />
                 <p>Drag 'n' drop some files here, or click to select files</p>

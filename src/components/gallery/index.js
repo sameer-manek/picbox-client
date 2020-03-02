@@ -26,10 +26,12 @@ class Gallery extends Component
 			isLoading: false,
 			cols: 3,
 			currentIndex: 0,
-			images: []
+			images: [],
+			dropzone: "none"
 		}
 
 		this.handleWindowResize = this.handleWindowResize.bind(this)
+		this.toggleDropZone = this.toggleDropZone.bind(this)
 
 		window.onscroll = debounce(() => {
 			const {
@@ -64,6 +66,14 @@ class Gallery extends Component
 			this.setState({
 				cols: 1
 			})
+	}
+
+	toggleDropZone()
+	{
+		let dropzone = this.state.dropzone === "block" ? "none" : "block"
+		this.setState({
+			dropzone
+		})
 	}
 
 	componentDidMount()
@@ -117,10 +127,10 @@ class Gallery extends Component
     {
         return(
             <div style={styles.wrapper}>
-				<Dropzone />
+				<Dropzone display={this.state.dropzone} toggle={this.toggleDropZone} />
 				{this.createGrid()}
 
-				<UploadWindow />
+				<UploadWindow toggle={this.toggleDropZone} />
             </div>
         )
     }
