@@ -23,3 +23,18 @@
 .dropbox p {
     line-height: 280px;
 }
+
+.closeBtn {
+    color: white;
+    border: 2px solid white;
+    background-color: transparent;
+    height: 60;
+    width: 60;
+    display: block;
+    position: fixed;
+    right: 30px;
+    top: 30px;
+    padding: 15px 17px;
+    border-radius: 50px;
+    cursor: pointer;
+}

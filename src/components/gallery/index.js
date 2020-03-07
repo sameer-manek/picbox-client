@@ -5,6 +5,7 @@ import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
 import UploadWindow from '../uploadWindow'
 import Dropzone from '../dropzone'
+import Request from 'superagent'
 
 const styles = {
     wrapper: {
@@ -32,6 +33,7 @@ class Gallery extends Component
 
 		this.handleWindowResize = this.handleWindowResize.bind(this)
 		this.toggleDropZone = this.toggleDropZone.bind(this)
+		this.handleFiles = this.handleFiles.bind(this)
 
 		window.onscroll = debounce(() => {
 			const {
@@ -50,6 +52,13 @@ class Gallery extends Component
 				this.loadNextBatch();
 			  }
 		}, 100)
+	}
+
+	handleFiles(files)
+	{
+		// close the dropzone and upload files
+		this.toggleDropZone()
+		Request.post('http://localhost:5000/upload')
 	}
 
 	handleWindowResize()
@@ -127,7 +136,7 @@ class Gallery extends Component
     {
         return(
             <div style={styles.wrapper}>
-				<Dropzone display={this.state.dropzone} toggle={this.toggleDropZone} />
+				<Dropzone display={this.state.dropzone} toggle={this.toggleDropZone} handleFiles={this.handleFiles} />
 				{this.createGrid()}
 
 				<UploadWindow toggle={this.toggleDropZone} />
