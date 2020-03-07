@@ -59,6 +59,15 @@ class Gallery extends Component
 		// close the dropzone and upload files
 		this.toggleDropZone()
 		Request.post('http://localhost:5000/upload')
+			.set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+			.send(files[0])
+			.on('progress', function(e) {
+				console.log('Progress', e.percent);
+			}.bind(this))
+			.end((err, res) => {
+				console.log(err);
+				console.log(res);
+			})
 	}
 
 	handleWindowResize()
