@@ -4,6 +4,7 @@ import './gallery.css'
 import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
 import UploadWindow from '../uploadWindow'
+import Dropzone from '../dropzone'
 
 const styles = {
     wrapper: {
@@ -25,10 +26,13 @@ class Gallery extends Component
 			isLoading: false,
 			cols: 3,
 			currentIndex: 0,
-			images: []
+			images: [],
+			dropzone: "none"
 		}
 
 		this.handleWindowResize = this.handleWindowResize.bind(this)
+		this.toggleDropZone = this.toggleDropZone.bind(this)
+		this.handleFiles = this.handleFiles.bind(this)
 
 		window.onscroll = debounce(() => {
 			const {
@@ -49,6 +53,25 @@ class Gallery extends Component
 		}, 100)
 	}
 
+	handleFiles(files)
+	{
+		// close the dropzone and upload files
+		let data = new FormData()
+		let count = 0
+		files.forEach(file => {
+			data.append('photos['+ count +']', file)
+			++count
+		})
+
+		axios.post('http://localhost:5000/upload', data, {
+				headers: {
+					'content-type': 'multipart/form-data'
+				}
+			})
+			.then(this.toggleDropZone())
+			.catch(err => console.log(err))
+	}
+
 	handleWindowResize()
 	{
 		if (window.innerWidth >= 960) // tablet
@@ -63,6 +86,14 @@ class Gallery extends Component
 			this.setState({
 				cols: 1
 			})
+	}
+
+	toggleDropZone()
+	{
+		let dropzone = this.state.dropzone === "block" ? "none" : "block"
+		this.setState({
+			dropzone
+		})
 	}
 
 	componentDidMount()
@@ -116,9 +147,10 @@ class Gallery extends Component
     {
         return(
             <div style={styles.wrapper}>
+				<Dropzone display={this.state.dropzone} toggle={this.toggleDropZone} handleFiles={this.handleFiles} />
 				{this.createGrid()}
 
-				<UploadWindow />
+				<UploadWindow toggle={this.toggleDropZone} />
             </div>
         )
     }
