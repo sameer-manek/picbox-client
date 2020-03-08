@@ -5,7 +5,6 @@ import debounce from 'lodash.debounce'
 import Thumbnail from '../thumbnail'
 import UploadWindow from '../uploadWindow'
 import Dropzone from '../dropzone'
-import Request from 'superagent'
 
 const styles = {
     wrapper: {
@@ -57,17 +56,20 @@ class Gallery extends Component
 	handleFiles(files)
 	{
 		// close the dropzone and upload files
-		this.toggleDropZone()
-		Request.post('http://localhost:5000/upload')
-			.set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-			.send(files[0])
-			.on('progress', function(e) {
-				console.log('Progress', e.percent);
-			}.bind(this))
-			.end((err, res) => {
-				console.log(err);
-				console.log(res);
+		let data = new FormData()
+		let count = 0
+		files.forEach(file => {
+			data.append('photos['+ count +']', file)
+			++count
+		})
+
+		axios.post('http://localhost:5000/upload', data, {
+				headers: {
+					'content-type': 'multipart/form-data'
+				}
 			})
+			.then(this.toggleDropZone())
+			.catch(err => console.log(err))
 	}
 
 	handleWindowResize()
