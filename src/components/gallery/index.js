@@ -26,6 +26,7 @@ class Gallery extends Component
 			isLoading: false,
 			cols: 3,
 			currentIndex: 0,
+			urls: [],
 			images: [],
 			dropzone: "none"
 		}
@@ -57,18 +58,26 @@ class Gallery extends Component
 	{
 		// close the dropzone and upload files
 		let data = new FormData()
-		let count = 0
-		files.forEach(file => {
-			data.append('photos['+ count +']', file)
-			++count
-		})
+		let file = files[0]
+		data.append('photo', files[0])
+		console.log(file.type)
 
 		axios.post('http://localhost:5000/upload', data, {
 				headers: {
-					'content-type': 'multipart/form-data'
+					'Content-Type': file.type
 				}
 			})
-			.then(this.toggleDropZone())
+			.then(res => {
+				let file = res.data
+				let images = this.state.images
+				let l = this.state.currentIndex + 1
+				images.unshift(<Thumbnail href={"http://localhost:5000/imgs/thumbnail/" + file} key={l} />)
+				this.setState({
+					images,
+					currentIndex: l
+				})
+				this.toggleDropZone()
+			})
 			.catch(err => console.log(err))
 	}
 
@@ -100,7 +109,7 @@ class Gallery extends Component
 	{
 		this.handleWindowResize()
 		window.addEventListener("resize", this.handleWindowResize)
-		this.loadNextBatch()
+		this.fetchImages()
 	}
 
 	componentWillUnmount()
@@ -125,21 +134,56 @@ class Gallery extends Component
 		return grid;
 	}
 
-	loadNextBatch ()
+	async fetchImages ()
 	{
-		let images = this.state.images
-		let l = this.state.currentIndex
-		axios.get("http://localhost:5000/images/thumbnails/"+this.state.currentIndex + 1).then(response => {
-			let uris = response.data
+		let urls = this.state.urls
+		await axios.get("http://localhost:5000/images").then(response => {
+			let files = response.data
 
-			uris.forEach(element => {
-				images.push(<Thumbnail href={element} key={++l} />)
+			files.forEach(file => {
+				urls.push("http://localhost:5000/imgs/thumbnail/" + file)
 			});
 
 			this.setState({
-				images: images,
-				currentIndex: l
+				urls
 			})
+		})
+
+		this.loadFirstBatch()
+	}
+
+	loadFirstBatch() {
+		let index = this.state.currentIndex
+		let images = this.state.images
+		let urls = this.state.urls.slice(0, 29)
+
+		urls.forEach(url => {
+			images.push(<Thumbnail href={url} key={index} />)
+			++index
+			return true
+		});
+
+		this.setState({
+			images: images,
+			currentIndex: index
+		})
+	}
+
+	loadNextBatch ()
+	{
+		let index = this.state.currentIndex
+		let images = this.state.images
+		let urls = this.state.urls.slice(index + 1, index + 7)
+
+		urls.forEach(url => {
+			images.push(<Thumbnail href={url} key={index} />)
+			++index
+			return true
+		});
+
+		this.setState({
+			images: images,
+			currentIndex: index
 		})
 	}
 
